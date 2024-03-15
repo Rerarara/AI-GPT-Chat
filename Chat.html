@@ -1,0 +1,49 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" charset="utf-8">
+    <title>AI问答</title>
+    <link rel="stylesheet" type="text/css" href="JavaScript/style.css">
+    <link rel="icon" type="image/png" href="icon/chatgpt.png">
+    <script type="text/javascript" src="JavaScript/gpt.js"></script>
+</head>
+
+<body>
+    <div class="container" id="container">
+        <div class="rightSide" id="right">
+            <div class="header">
+                <div class="imgText">
+                    <div class="userimg">
+                        <img src="icon/chatgpt.png" class="cover">
+                    </div>
+                    <h4>AI问答<br><span>Ver1.2.2---Powered by GPT-3.5-turbo</span></h4>
+                </div>
+                <ul class="nav_icons">
+                </ul>
+            </div>
+
+            <div style="padding-top: 5%;"></div>
+
+            <!--chatbox-->
+            <div class="chatBox" id="chatbox">
+                <div class="message frnd_message">
+                    <p>你好，我是你的AI助手，请向我提问吧！<br><span>2024/3/14</span></p>
+                </div>
+            </div>
+
+            <div style="padding-top: 10%;" id="bottom"></div>
+
+            <!--chat input-->
+            <div class="chatbox_input" id="input">
+                <div>
+                    <textarea autofocus type="textarea" id="myInput"></textarea>
+                    <button class="button" onclick="a()">
+                        <span style="color: black;font-size: 15px;">发送</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
