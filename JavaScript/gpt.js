@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     var now = new Date();
     var dateTimeStr = now.toLocaleString();
-    var chatboxelement = document.getElementById("chatbox");
     var xhr = new XMLHttpRequest();
     xhr.open("GET", "http://127.0.0.1:8081/HM", true);
     xhr.send();
@@ -78,9 +77,8 @@ function a() {
                     <p>${escapeHtml(response.content)}<br><span>${dateTimeStr}</span></p>
                     </div>`;
                 } else {
-                    // 请求失败，处理错误
                     chatboxelement.innerHTML += `<div class="message frnd_message">
-                    <p>请求失败，错误代码：${response.code}<br><span>${dateTimeStr}</span></p>
+                    <p>接口出错，错误代码：${response.code}，错误消息：${response.message}<br><span>${dateTimeStr}</span></p>
                     </div>`;
                 }
             } else {
@@ -92,6 +90,31 @@ function a() {
             document.getElementById('bottom').scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
         }
     };
+}
+
+function d() {
+    var condel = confirm("确定要删除历史消息并刷新会话吗？");
+    if (condel) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "http://127.0.0.1:8081/DM", true);
+        xhr.send();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    console.log(response);
+                    if (response.code === 200) {
+                        location.reload();
+                    } else if (response.code === 500) {
+                        alert("删除历史消息时出现错误！")
+                    }
+                } else {
+                    alert("请求失败！")
+                }
+                document.getElementById('bottom').scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+            }
+        };
+    }
 }
 
 document.addEventListener('keydown', function (event) {

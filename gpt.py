@@ -10,7 +10,11 @@ import threading
 from datetime import datetime
 import webbrowser
 
-openai.api_key = input("Your api-key:")
+try:
+    with open('key.txt', 'r') as file:
+        openai.api_key = str(file.read())
+except Exception:
+    openai.api_key = input("Your api-key:")
 
 temp = input("Setting temperature(0-2):")
 if temp == "":
@@ -64,13 +68,27 @@ def GPT():
         with lock:
             Allmessages[index].append({"role": "user", "content": question})
             Times[index].append(datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
-        completion = openai.ChatCompletion.create(
-        model = "gpt-3.5-turbo",
-        temperature = temp,
-        messages = Allmessages[index]
-        )
-        completion.encoding = 'utf-8'
-        print(completion.choices[0].message.content)
+        
+        try:
+            completion = openai.ChatCompletion.create(
+            model = "gpt-3.5-turbo",
+            temperature = temp,
+            messages = Allmessages[index]
+            )
+            completion.encoding = 'utf-8'
+            print(completion.choices[0].message.content)
+        except openai.error.OpenAIError as e:
+            print("An error occurred: {}".format(e))
+            data =  {
+                        "code": 501,
+                        "message": str(e),
+                        "content": None,
+                    }
+            json_data = json.dumps(data)
+            response = make_response(json_data)
+            response.mimetype = "applcation/json"
+            return response
+            
         with lock:
             Allmessages[index].append({"role": "assistant", "content": completion.choices[0].message.content})
             Times[index].append(datetime.now().strftime("%Y/%m/%d %H:%M:%S"))
@@ -133,6 +151,47 @@ def HM():
                     "code": 500,
                     "message": "unexpected error",
                     "content": None,
+                }
+        json_data = json.dumps(data)
+        response = make_response(json_data)
+        response.mimetype = "applcation/json"
+        return response
+    
+@app.route("/DM", methods=["GET"])
+@cross_origin()
+def DM():
+    try:
+        global ips
+        global Times
+        global Allmessages
+
+        if request.remote_addr not in ips:
+            data =  {
+                        "code": 201,
+                        "message": "new user",
+                    }
+            json_data = json.dumps(data)
+            response = make_response(json_data)
+            response.mimetype = "applcation/json"
+            return response
+
+        index = ips.index(request.remote_addr)
+        Allmessages.pop(index)
+        Times.pop(index)
+        ips.pop(index)
+
+        data =  {
+                    "code": 200,
+                    "message": "ok",
+                }
+        json_data = json.dumps(data)
+        response = make_response(json_data)
+        response.mimetype = "applcation/json"
+        return response
+    except Exception:
+        data =  {
+                    "code": 500,
+                    "message": "unexpected error",
                 }
         json_data = json.dumps(data)
         response = make_response(json_data)
